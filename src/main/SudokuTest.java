@@ -4,6 +4,7 @@ import view.SudokuFrame;
 
 public class SudokuTest {
 	public static void main(String[] args) {
-		new SudokuFrame(40);
+		int percent = 40;
+		new SudokuFrame(percent);
 	}
 }
