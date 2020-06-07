@@ -97,7 +97,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
 	private void drawCells(Graphics g) {
 		for (int x=0; x<SUDOKU_SIZE; x++) 
 			for (int y=0; y<SUDOKU_SIZE; y++)
-				drawCell(g, controller.getCell(new Point(x, y)));
+				drawCell(g, controller.getCell(x, y));
 	}
 
 	private void drawCell(Graphics g, Cell cell) {
@@ -336,7 +336,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
 		@Override
 		public void execute() {
 			if (shift) controller.deleteAll();
-			else controller.delete(selected);
+			else controller.delete(selected.x, selected.y);
 		}
 		
 	}
