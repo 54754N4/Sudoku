@@ -46,17 +46,16 @@ public class Controller {
 	
 	private Cell getRandomCell() {
 		return getCell(
-			new Point(
 				rand.nextInt(SUDOKU_SIZE),
-				rand.nextInt(SUDOKU_SIZE)));
+				rand.nextInt(SUDOKU_SIZE));
 	}
 	
 	private void clearNotesFrom(Point target, int n) {
 		Cell[] cells;
 		for (int i=0; i<SUDOKU_SIZE; i++) {
 			cells = new Cell[]{ 
-				getCell(new Point(target.x, i)), 
-				getCell(new Point(i, target.y))
+				getCell(target.x, i), 
+				getCell(i, target.y)
 			};
 			for (Cell cell : cells)
 				if (cell.hasNote(n)) 
@@ -77,7 +76,11 @@ public class Controller {
 	}
 	
 	public Cell getCell(Point p) {
-		return cells[p.x][p.y];
+		return getCell(p.x, p.y);
+	}
+	
+	public Cell getCell(int x, int y) {
+		return cells[x][y];
 	}
 	
 	public Point pointFromCoords(int x, int y) {
@@ -105,12 +108,16 @@ public class Controller {
 		backups.add(makeSnapshot());
 		for (int i=0; i<SUDOKU_SIZE; i++)
 			for (int j=0; j<SUDOKU_SIZE; j++)
-				delete(new Point(i,j));
+				delete(i, j);
 	}
 	
 	public void delete(Point p) {
+		delete(p.x, p.y);
+	}
+	
+	public void delete(int x,  int y) {
 		backups.add(makeSnapshot());
-		Cell cell = getCell(p);
+		Cell cell = getCell(x, y);
 		if (!cell.blocked)
 			cell.clear();
 	}
