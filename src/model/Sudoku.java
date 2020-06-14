@@ -117,7 +117,7 @@ public class Sudoku {
 			blocks[block] = true;
 			rows[point.x] = true;
 			cols[point.y] = true;
-			model[point.x][point.y] = number;;
+			model[point.x][point.y] = number;
 		}
 		
 		private boolean finished() {
