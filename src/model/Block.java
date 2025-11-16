@@ -1,7 +1,5 @@
 package model;
 
-import model.Point;
-
 /** Allows us to retrieve block number index from coordinates (x,y) */
 public enum Block {	
 	ZERO(new int[]{0,1,2}, new int[]{0,1,2}),
@@ -22,7 +20,7 @@ public enum Block {
 	}
 	
 	public static int of(Point p) {
-		for (Block block : values()) 
+		for (var block : values())
 			if (contains(p.x, block.rows) && contains(p.y, block.cols))
 				return block.ordinal();
 		return -1;
@@ -30,7 +28,7 @@ public enum Block {
 	
 	// starting block coords. based on block index is : B(i) = ((3*(i//3), (3*(i%3)))
 	public static Point startOf(int i) {
-		Point coords = coordsOf(i);
+		var coords = coordsOf(i);
 		return new Point(
 			Sudoku.BLOCK_SIZE*coords.x, 
 			Sudoku.BLOCK_SIZE*coords.y);
@@ -42,9 +40,9 @@ public enum Block {
 			i/Sudoku.BLOCK_SIZE);
 	}
 	
-	private static boolean contains(Number x, int[] arr) {
-		for (int i : arr)
-			if (i == x.intValue()) 
+	private static boolean contains(Number n, int[] arr) {
+		for (var i : arr)
+			if (i == n.intValue())
 				return true;
 		return false;
 	}

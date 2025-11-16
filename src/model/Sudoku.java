@@ -1,6 +1,5 @@
 package model;
 
-import model.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,11 +7,11 @@ import java.util.Random;
 import verifier.Verifier;
 
 public class Sudoku {
-	public static enum Target {ROW, COL, BLOCK};
+	public enum Target {ROW, COL, BLOCK};
 	public static final Random rand = new Random();
 	public static final int SIZE = 9, BLOCK_SIZE = 3;
 	public final int[][] model;
-	private Marker[] markers;
+	private final Marker[] markers;
 			
 	public Sudoku() {
 		model = new int[SIZE][SIZE];
@@ -20,16 +19,16 @@ public class Sudoku {
 	}
 	
 	private void init() {
-		for (int i=0; i<SIZE; i++) {
+		for (int i=0; i<SIZE; ++i) {
 			markers[i] = new Marker(i+1);
-			for (int j=0; j<SIZE; j++)
+			for (int j=0; j<SIZE; ++j)
 				model[i][j] = 0;
 		}
 	}
 	
 	private void erase(int num) {
-		for (int i=0; i<SIZE; i++)
-			for (int j=0; j<SIZE; j++)
+		for (int i=0; i<SIZE; ++i)
+			for (int j=0; j<SIZE; ++j)
 				if (model[i][j] == num)
 					model[i][j] = 0;
 	}
@@ -37,23 +36,23 @@ public class Sudoku {
 	public void generateModel() {
 		init();
 		Marker marker;
-		for (int number=0; number<markers.length; number++) {
-			marker = markers[number].initAll();
-			int c =0;
-			while (!marker.finished()) {
-				marker.randomAvailablePoint();
-				if (c++ > 81) {
-					generateModel();
-					return;
-				}
-			}
-		}
+    for (var value : markers) {
+      marker = value.initAll();
+      int c = 0;
+      while (!marker.finished()) {
+        marker.randomAvailablePoint();
+        if (c++ > 81) {
+          generateModel();
+          return;
+        }
+      }
+    }
 	}
 	
 	public String debug() {
-		StringBuilder sb = new StringBuilder();
-		for (int i=0; i<SIZE; i++) {
-			for (int j=0; j<SIZE; j++)
+		var sb = new StringBuilder();
+		for (int i=0; i<SIZE; ++i) {
+			for (int j=0; j<SIZE; ++j)
 				sb.append(model[i][j]);
 			sb.append("\n");
 		}
@@ -66,14 +65,14 @@ public class Sudoku {
 		s.generateModel();
 		time = System.currentTimeMillis() - time;
 		System.out.println(s.debug());
-		System.out.println(Verifier.verify(s.model)+" "+time+"ms\n");
+		System.out.printf("%s %sms%n", Verifier.verify(s.model), time);
 	}
 	
 	class Marker {
 		public final int number;
 		private boolean[] rows, cols, blocks;	// marks which numbers we put
 		private Point first;
-		private List<Point> invalids;
+		private final List<Point> invalids;
 		
 		public Marker(int number) {
 			this.number = number;
@@ -82,9 +81,10 @@ public class Sudoku {
 		}
 		
 		private Marker initAll() {
-			rows = initMarkers(); 
-			cols = initMarkers(); 
-			blocks = initMarkers();
+      var size = Sudoku.SIZE;
+			rows = new boolean[size];
+			cols = new boolean[size];
+			blocks = new boolean[size];
 			erase(number);
 			return this;
 		}
@@ -102,9 +102,11 @@ public class Sudoku {
 			do { // keep trying till we get a new point in an unmarked block
 				previous = point;
 				point = new Point(randomAvailable(rows), randomAvailable(cols));
-				if (previous == null) setFirst(point);
+				if (previous == null)
+          setFirst(point);
 				block = Block.of(point);
-				if (point.equals(previous)) error++;
+				if (point.equals(previous))
+          ++error;
 				if (error == 10) {  // Means initial point was placed wrong 
 					error = 0; 		// since we keep getting same last point pos
 					initAll(); 		// reset markers
@@ -124,24 +126,18 @@ public class Sudoku {
 			return allMarked(rows) && allMarked(cols) && allMarked(blocks);
 		}
 		
-		private boolean[] initMarkers() {
-			boolean[] arr = new boolean[Sudoku.SIZE];
-			for (int i=0; i<arr.length; i++)
-				arr[i] = false;
-			return arr;
-		}
-		
 		private int randomAvailable(boolean[] arr) {
-			List<Integer> available = new ArrayList<>();
+			var available = new ArrayList<Integer>();
 			for (int i=0; i<arr.length; i++) 
 				if (!arr[i]) 
 					available.add(i);
-			if (available.size() == 1) return available.get(0);
+			if (available.size() == 1)
+        return available.getFirst();
 			return available.get(rand.nextInt(available.size()));
 		}
 		
 		private boolean allMarked(boolean[] arr) {
-			boolean marked = true;
+			var marked = true;
 			for (boolean b : arr)
 				marked &= b;
 			return marked;

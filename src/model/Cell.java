@@ -1,11 +1,14 @@
 package model;
 
+import java.io.Serial;
 import java.io.Serializable;
 
+import java.util.Arrays;
 import view.SudokuPanel;
 
 public class Cell implements Serializable {
-	private static final long serialVersionUID = 1446121313411739282L;
+	@Serial
+  private static final long serialVersionUID = 1446121313411739282L;
 	public static final int SUDOKU_SIZE = SudokuPanel.SUDOKU_SIZE;
 	public static enum State {EMPTY, CORRECT, INCORRECT};
 	public final Point coords;
@@ -23,9 +26,9 @@ public class Cell implements Serializable {
 	}
 	
 	public Cell clone() {
-		Cell cell = new Cell(coords.x, coords.y, number, actual);
+    Cell cell = new Cell(coords.x, coords.y, number, actual);
 		cell.setBlocked(blocked);
-		for (int i=0; i<notes.length; i++)
+		for (int i=0; i<notes.length; ++i)
 			if (hasNote(i))
 				cell.setNote(i);
 		return cell;
@@ -43,14 +46,16 @@ public class Cell implements Serializable {
 	}
 	
 	private void clearNotes() {
-		for (int i=0; i<notes.length; i++) 
-			notes[i] = false;
+    Arrays.fill(notes, false);
 	}
 	
 	public State getState() {
-		if (number == 0) return State.EMPTY;
-		else if (number != actual) return State.INCORRECT;
-		else return State.CORRECT;
+		if (number == 0)
+      return State.EMPTY;
+		else if (number != actual)
+      return State.INCORRECT;
+		else
+      return State.CORRECT;
 	}
 	
 	public boolean hasNotes() {

@@ -2,9 +2,8 @@ package main;
 
 import view.SudokuFrame;
 
-public class SudokuTest {
+public class RunSudoku {
 	public static void main(String[] args) {
-		int percent = 40;
-		new SudokuFrame(percent);
+		new SudokuFrame(0.4f);
 	}
 }

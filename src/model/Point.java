@@ -26,10 +26,14 @@ public class Point {
 	
 	public Point plusEquals(int i, int j, int wrap) {
 		plusEquals(i,j);
-		if (x >= wrap) x = 0;
-		else if (x < 0) x = wrap-1;
-		if (y >= wrap) y = 0;
-		else if (y < 0) y = wrap-1;
+		if (x >= wrap)
+      x = 0;
+		else if (x < 0)
+      x = wrap-1;
+		if (y >= wrap)
+      y = 0;
+		else if (y < 0)
+      y = wrap-1;
 		return this;
 	}
 	
@@ -38,7 +42,8 @@ public class Point {
 	}
 	
 	public boolean equals(Point p) {
-		if (p == null) return false;
+		if (p == null)
+      return false;
 		return x==p.x && y==p.y;
 	}
 	

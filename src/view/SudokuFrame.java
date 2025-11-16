@@ -3,15 +3,17 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import java.io.Serial;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class SudokuFrame extends JFrame {
-	private static final long serialVersionUID = 1L;
-	private SudokuPanel panel;
+	@Serial
+  private static final long serialVersionUID = 1L;
+	private final SudokuPanel panel;
 	
-	public SudokuFrame(int percent) {
-		getContentPane().add(panel = new SudokuPanel(percent, this), BorderLayout.CENTER);
+	public SudokuFrame(float difficulty) {
+		getContentPane().add(panel = new SudokuPanel(difficulty, this), BorderLayout.CENTER);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(getPreferredSize());
 		setResizable(false);

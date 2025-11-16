@@ -11,6 +11,12 @@
 
 > Redo: Z
 
-> Delete cell: DELETE
+> Delete cell: BACKSPACE or DELETE 
 
 > Clear all : SHIFT + DELETE
+
+> Auto add notes : N
+
+> Auto fill singles : S
+
+> Exit : ESC

@@ -11,35 +11,37 @@ import model.Sudoku;
 import view.SudokuPanel;
 
 public class Controller {
-	public static final int SUDOKU_SIZE = SudokuPanel.SUDOKU_SIZE, 
-			 BLOCK_SIZE = SudokuPanel.BLOCK_SIZE;
-	private Random rand;
-	private Sudoku sudoku;
+	public static final int
+      SUDOKU_SIZE = SudokuPanel.SUDOKU_SIZE,
+      BLOCK_SIZE = SudokuPanel.BLOCK_SIZE;
+	private final Random rand;
+	private final Sudoku sudoku;
 	private Cell[][] cells;
-	private Deque<Snapshot> backups, restores;
+	private final Deque<Snapshot> backups, restores;
 	
-	public Controller(int percent) {
+	public Controller(float difficulty) {
 		sudoku = new Sudoku();
 		rand = new Random();
 		backups = new ArrayDeque<>();
 		restores = new ArrayDeque<>();
 		cells = new Cell[SUDOKU_SIZE][SUDOKU_SIZE];
 		sudoku.generateModel();
-		for (int i=0; i<SUDOKU_SIZE; i++)
-			for (int j=0; j<SUDOKU_SIZE; j++)
+		for (int i=0; i<SUDOKU_SIZE; ++i)
+			for (int j=0; j<SUDOKU_SIZE; ++j)
 				cells[i][j] = new Cell(i, j, 0, sudoku.model[i][j]);
-		createBlocks(percent);
+		createBlocks(difficulty);
 	}
 	
-	private void createBlocks(int percent) {
-		int max = SUDOKU_SIZE*SUDOKU_SIZE,
-			total = (int) (percent/100.0 * max);
-		if (total == max) total--;
+	private void createBlocks(float percent) {
+		int max = SUDOKU_SIZE * SUDOKU_SIZE,
+			total = (int) (percent * max);
+		if (total == max)
+      --total;
 		Cell cell;
 		while (total != 0) {
 			if (!(cell = getRandomCell()).blocked) {
 				cell.setBlocked(true);
-				total--;
+        --total;
 			}
 		}
 	}
@@ -52,7 +54,7 @@ public class Controller {
 	
 	private void clearNotesFrom(Point target, int n) {
 		Cell[] cells;
-		for (int i=0; i<SUDOKU_SIZE; i++) {
+		for (int i=0; i<SUDOKU_SIZE; ++i) {
 			cells = new Cell[]{ 
 				getCell(target.x, i), 
 				getCell(i, target.y)
@@ -64,8 +66,8 @@ public class Controller {
 	}
 	
 	public boolean isFinished() {
-		for (int i=0; i<SUDOKU_SIZE; i++)
-			for (int j=0; j<SUDOKU_SIZE; j++)
+		for (int i=0; i<SUDOKU_SIZE; ++i)
+			for (int j=0; j<SUDOKU_SIZE; ++j)
 				if (cells[i][j].getState() != State.CORRECT)
 					return false;
 		return true;
@@ -100,14 +102,16 @@ public class Controller {
 	public void addNote(Point p, int n) {
 		backups.add(makeSnapshot());
 		Cell cell = getCell(p); 
-		if (cell.hasNote(n)) cell.removeNote(n);
-		else cell.setNote(n);
+		if (cell.hasNote(n))
+      cell.removeNote(n);
+		else
+      cell.setNote(n);
 	}
 	
 	public void deleteAll() {
 		backups.add(makeSnapshot());
-		for (int i=0; i<SUDOKU_SIZE; i++)
-			for (int j=0; j<SUDOKU_SIZE; j++)
+		for (int i=0; i<SUDOKU_SIZE; ++i)
+			for (int j=0; j<SUDOKU_SIZE; ++j)
 				delete(i, j);
 	}
 	
@@ -127,7 +131,7 @@ public class Controller {
 	}
 	
 	public void redo() {
-		if (restores.size() != 0) {
+		if (!restores.isEmpty()) {
 			Snapshot s = restores.removeLast(); 
 			backups.add(s);
 			cells = s.state;
@@ -135,7 +139,7 @@ public class Controller {
 	}
 	
 	public void undo() {
-		if (backups.size() != 0) {
+		if (!backups.isEmpty()) {
 			Snapshot s = backups.removeLast(); 
 			restores.add(s);
 			cells = s.state;
@@ -147,8 +151,8 @@ public class Controller {
 		
 		protected Snapshot() {
 			state = new Cell[SUDOKU_SIZE][SUDOKU_SIZE];
-			for (int i=0; i<SUDOKU_SIZE; i++)
-				for (int j=0; j<SUDOKU_SIZE; j++)
+			for (int i=0; i<SUDOKU_SIZE; ++i)
+				for (int j=0; j<SUDOKU_SIZE; ++j)
 					state[i][j] = cells[i][j].clone();
 		}
 	}
