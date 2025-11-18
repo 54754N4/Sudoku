@@ -51,6 +51,7 @@ public class Controller {
 	}
 	
 	private void clearNotesFrom(Point target, int n) {
+    // Clear notes matching n in row/cols at the same time
 		Cell[] cells;
 		for (int i=0; i<SUDOKU_SIZE; ++i) {
 			cells = new Cell[]{
@@ -61,6 +62,17 @@ public class Controller {
 				if (cell.hasNote(n))
 					cell.removeNote(n);
 		}
+    // Clear also from the current block
+    var blockIndex = Block.of(target);
+    var block = Block.values()[blockIndex];
+    Cell cell;
+    for (var x : block.rows) {
+      for (var y : block.cols) {
+        cell = getCell(x, y);
+        if (cell.hasNote(n))
+          cell.removeNote(n);
+      }
+    }
 	}
 	
 	public boolean isFinished() {
