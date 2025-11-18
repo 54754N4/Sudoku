@@ -1,5 +1,6 @@
 package view;
 
+import controller.Controller;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,8 +17,6 @@ import java.io.Serial;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-
-import java.util.Arrays;
 import java.util.stream.IntStream;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -25,8 +24,6 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-
-import controller.Controller;
 import model.Block;
 import model.Cell;
 import model.Cell.State;
@@ -37,13 +34,13 @@ public class SudokuPanel extends JPanel implements MouseListener {
   private static final long serialVersionUID = -1281628670459625754L;
 	public static final int BLOCK_SIZE = 70, SUDOKU_SIZE = 9, SLIM = 1, THICK = 3;
 	public static final Color
-      HIGHLIGHTED_COLOR = Color.red,
-      NORMAL_COLOR = Color.black,
-      BLOCKED_COLOR = Color.gray;
+      HIGHLIGHTED_COLOR = Color.RED,
+      NORMAL_COLOR = Color.BLACK,
+      BLOCKED_COLOR = Color.DARK_GRAY;
 	public static final Font
       BIG_FONT = new Font("Verdana", Font.BOLD, 50),
       SMALL_FONT = new Font("Verdana", Font.PLAIN, 12);
-
+  public static final Point POINT_MIDDLE = Point.from(SUDOKU_SIZE/2, SUDOKU_SIZE/2);
   private final float difficulty;
 	private final SudokuFrame frame;
 	private Controller controller;
@@ -55,7 +52,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
 
 	public SudokuPanel(float difficulty, SudokuFrame frame) {
 		this.frame = frame;
-		this.difficulty = difficulty;	// difficulty
+		this.difficulty = difficulty;
 		setSize(getPreferredSize());
 		setKeyBindings();
 		addMouseListener(this);
@@ -78,7 +75,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
 	private void reset() {
 		setHighlighted(0);
 		controller = new Controller(difficulty);
-		selected = new Point(4, 4);
+		selected = POINT_MIDDLE;
 		start = LocalTime.now();
 	}
 	
@@ -107,8 +104,8 @@ public class SudokuPanel extends JPanel implements MouseListener {
 	}
 	
 	private void drawCells(Graphics g) {
-		for (int x=0; x<SUDOKU_SIZE; x++) 
-			for (int y=0; y<SUDOKU_SIZE; y++)
+		for (int x = 0; x < SUDOKU_SIZE; ++x)
+			for (int y = 0; y < SUDOKU_SIZE; ++y)
 				drawCell(g, controller.getCell(x, y));
 	}
 
@@ -128,7 +125,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
 	}
 	
 	private void drawNotes(Graphics g, Cell cell) {
-		for (int i=0; i<cell.notes.length; i++)
+		for (int i = 0; i < cell.notes.length; ++i)
 			if (cell.notes[i])
 				writeNote(g, i, cell.coords.x, cell.coords.y);
 	}
@@ -189,8 +186,8 @@ public class SudokuPanel extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Point at = new Point(e.getPoint());
-		selected = controller.pointFromCoords(at.x, at.y);
+		var mousePoint = e.getPoint();
+		selected = controller.pointFromCoords(mousePoint.x, mousePoint.y);
 		repaint();
 	}
 	
@@ -233,26 +230,26 @@ public class SudokuPanel extends JPanel implements MouseListener {
   public static final String[] MODIFIERS = { SHIFT, NUMPAD, ALT };
 
 	private void setNewGameBinding() {
-		bind(RESET, KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), new ResetAction());
+		bind(RESET, KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, InputEvent.CTRL_DOWN_MASK), new ResetAction());
     bind(EXIT, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), new ExitAction());
 	}
 
   private void setAutoBindings() {
-    bind(AUTO_NOTES, KeyStroke.getKeyStroke(KeyEvent.VK_N, 0), new AutoNotesAction());
-    bind(AUTO_SINGLES, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), new AutoSinglesAction());
+    bind(AUTO_NOTES, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK), new AutoNotesAction());
+    bind(AUTO_SINGLES, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK), new AutoSinglesAction());
   }
 
 	private void setHighlightBindings() {
-		var names = Arrays.stream(NUMBERS)
-        .map(ALT::concat)
-        .toArray(String[]::new);
-		for (int i=0; i<names.length; i++) 
-			bind(names[i], KeyStroke.getKeyStroke("alt "+(i+1)), new HighlightAction(i+1));
+		for (int i=0; i<NUMBERS.length; ++i) {
+      var highlightAction = new HighlightAction(i + 1);
+      bind(ALT.concat(NUMBERS[i]), KeyStroke.getKeyStroke("alt " + (i + 1)), highlightAction);
+      bind(ALT.concat(NUMPAD).concat(NUMBERS[i]), KeyStroke.getKeyStroke("alt NUMPAD" + (i + 1)), highlightAction);
+    }
 	}
 	
 	private void setActionBindings() {
-		bind(REDO, KeyStroke.getKeyStroke(KeyEvent.VK_X, 0), new RedoAction());
-		bind(UNDO, KeyStroke.getKeyStroke(KeyEvent.VK_Z, 0), new UndoAction());
+		bind(REDO, KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK), new RedoAction());
+		bind(UNDO, KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), new UndoAction());
 	}
 	
 	private void setDeleteBindings() {
@@ -405,10 +402,10 @@ public class SudokuPanel extends JPanel implements MouseListener {
 		
 		@Override
 		public void execute() {
-			controller.addNote(selected, number-1);
+			controller.addNote(selected, number);
 		}
 	}
-	
+
 	private class MoveAction extends SudokuAction {
 		@Serial
     private static final long serialVersionUID = 2038420213006370108L;
@@ -421,7 +418,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
 		
 		@Override
 		public void execute() {
-			selected.plusEquals(dx, dy, SUDOKU_SIZE);
+			selected = selected.plusEquals(dx, dy, SUDOKU_SIZE);
 		}
 		
 	}
@@ -430,8 +427,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
 
     @Override
     protected void execute() {
-      // todo
-      System.err.println("Auto notes action executed");
+      controller.addAllNotes();
     }
   }
 
@@ -439,8 +435,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
 
     @Override
     protected void execute() {
-      // todo
-      System.err.println("Auto singles action executed");
+      controller.addAllSingles();
     }
   }
 

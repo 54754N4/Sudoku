@@ -2,7 +2,6 @@ package model;
 
 import java.io.Serial;
 import java.io.Serializable;
-
 import java.util.Arrays;
 import view.SudokuPanel;
 
@@ -22,13 +21,13 @@ public class Cell implements Serializable {
 		this.number = number;
 		notes = new boolean[SUDOKU_SIZE];
 		clearNotes();
-		coords = new Point(x,y);
+		coords = Point.from(x,y);
 	}
 	
 	public Cell clone() {
     Cell cell = new Cell(coords.x, coords.y, number, actual);
 		cell.setBlocked(blocked);
-		for (int i=0; i<notes.length; ++i)
+		for (int i=1; i<=notes.length; ++i)
 			if (hasNote(i))
 				cell.setNote(i);
 		return cell;
@@ -66,13 +65,17 @@ public class Cell implements Serializable {
 	}
 	
 	public boolean hasNote(int i) {
-		return notes[i];
+    if (i <= 0 || i > notes.length)
+      throw new IllegalArgumentException("Invalid note index : "+i);
+    return notes[i-1];
 	}
 	
 	private void setNote(int i, boolean value) {
-		if (i < 0 || i >= notes.length || blocked)
-			return;
-		notes[i] = value;
+		if (i <= 0 || i > notes.length)
+			throw new IllegalArgumentException("Invalid note index : "+i);
+		if (blocked)
+      return;
+    notes[i-1] = value;
 	}
 	
 	public void setNote(int i) {

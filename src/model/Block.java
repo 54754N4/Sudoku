@@ -29,13 +29,13 @@ public enum Block {
 	// starting block coords. based on block index is : B(i) = ((3*(i//3), (3*(i%3)))
 	public static Point startOf(int i) {
 		var coords = coordsOf(i);
-		return new Point(
+		return Point.from(
 			Sudoku.BLOCK_SIZE*coords.x, 
 			Sudoku.BLOCK_SIZE*coords.y);
 	}
 	
 	public static Point coordsOf(int i) {
-		return new Point(
+		return Point.from(
 			i%Sudoku.BLOCK_SIZE,
 			i/Sudoku.BLOCK_SIZE);
 	}

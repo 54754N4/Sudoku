@@ -3,7 +3,7 @@ package controller;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Random;
-
+import model.Block;
 import model.Cell;
 import model.Cell.State;
 import model.Point;
@@ -47,20 +47,18 @@ public class Controller {
 	}
 	
 	private Cell getRandomCell() {
-		return getCell(
-				rand.nextInt(SUDOKU_SIZE),
-				rand.nextInt(SUDOKU_SIZE));
+		return getCell(rand.nextInt(SUDOKU_SIZE),	rand.nextInt(SUDOKU_SIZE));
 	}
 	
 	private void clearNotesFrom(Point target, int n) {
 		Cell[] cells;
 		for (int i=0; i<SUDOKU_SIZE; ++i) {
-			cells = new Cell[]{ 
-				getCell(target.x, i), 
+			cells = new Cell[]{
+				getCell(target.x, i),
 				getCell(i, target.y)
 			};
 			for (Cell cell : cells)
-				if (cell.hasNote(n)) 
+				if (cell.hasNote(n))
 					cell.removeNote(n);
 		}
 	}
@@ -86,16 +84,63 @@ public class Controller {
 	}
 	
 	public Point pointFromCoords(int x, int y) {
-		return new Point((x - x%BLOCK_SIZE)/BLOCK_SIZE, 
+		return Point.from((x - x%BLOCK_SIZE)/BLOCK_SIZE,
 			(y - y%BLOCK_SIZE)/BLOCK_SIZE);
 	}
+
+  private boolean inRangeIndex(int n) {
+    return 0 <= n && n < SUDOKU_SIZE;
+  }
+
+  private boolean inRange(int n) {
+    return 0 < n && n <= SUDOKU_SIZE;
+  }
+
+  public int cellCurrentValue(int x, int y) {
+    var cell = cells[x][y];
+    return cell.blocked ? cell.actual : cell.number;
+  }
+
+  public boolean hasInColumn(int col, int val) {
+    if (!inRange(val) || !inRangeIndex(col))
+      return false;
+    for (int i = 0; i < SUDOKU_SIZE; ++i)
+      if (cellCurrentValue(col, i) == val)
+        return true;
+    return false;
+  }
+
+  public boolean hasInRow(int row, int val) {
+    if (!inRange(val) || !inRangeIndex(row))
+      return false;
+    for (int i = 0; i < SUDOKU_SIZE; ++i)
+      if (cellCurrentValue(i, row) == val)
+        return true;
+    return false;
+  }
+
+  public boolean hasInBlock(int x, int y, int val, boolean notes) {
+    if (!inRangeIndex(x) || !inRangeIndex(y) || !inRange(val))
+      return false;
+    var blockIndex = Block.of(Point.from(x, y));
+    var block = Block.values()[blockIndex];
+    for (var i : block.rows)
+      for (var j : block.cols)
+        if ((!notes && cellCurrentValue(i, j) == val) || getCell(x, y).hasNote(val))
+          return true;
+    return false;
+  }
+
+  public boolean hasInPeers(int x, int y, int val) {
+    return hasInRow(y, val) || hasInColumn(x, val) || hasInBlock(x, y, val, false);
+  }
 	
 	public void addNumber(Point p, int n) {
 		backups.add(makeSnapshot());
 		Cell cell = getCell(p); 
 		if (!cell.blocked) {
 			cell.setNumber(n);
-			clearNotesFrom(p, n-1);	// note indices are always -1
+			clearNotesFrom(p, n);
 		}
 	}
 	
@@ -107,6 +152,28 @@ public class Controller {
 		else
       cell.setNote(n);
 	}
+
+  public void addAllNotes() {
+    for (int x = 0; x < SUDOKU_SIZE; ++x)
+      for (int y = 0; y < SUDOKU_SIZE; ++y)
+        if (cells[x][y].getState() == State.EMPTY)
+          for (int n = 1; n <= SUDOKU_SIZE; ++n)
+            if (!hasInPeers(x, y, n) && !cells[x][y].hasNote(n))
+              addNote(Point.from(x, y), n);
+  }
+
+  public void addAllSingles() {
+    for (int x = 0; x < SUDOKU_SIZE; ++x) {
+      for (int y = 0; y < SUDOKU_SIZE; ++y) {
+        if (cells[x][y].getState() == State.EMPTY) {
+          for (int n = 1; n <= SUDOKU_SIZE; ++n) {
+            // todo
+            System.err.println("Not finished");
+          }
+        }
+      }
+    }
+  }
 	
 	public void deleteAll() {
 		backups.add(makeSnapshot());
@@ -145,8 +212,8 @@ public class Controller {
 			cells = s.state;
 		}
 	}
-	
-	public class Snapshot {
+
+  public class Snapshot {
 		public final Cell[][] state;
 		
 		protected Snapshot() {

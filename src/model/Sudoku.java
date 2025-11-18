@@ -3,7 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import verifier.Verifier;
 
 public class Sudoku {
@@ -101,7 +100,7 @@ public class Sudoku {
 			int block, error = 0;
 			do { // keep trying till we get a new point in an unmarked block
 				previous = point;
-				point = new Point(randomAvailable(rows), randomAvailable(cols));
+				point = Point.from(randomAvailable(rows), randomAvailable(cols));
 				if (previous == null)
           setFirst(point);
 				block = Block.of(point);

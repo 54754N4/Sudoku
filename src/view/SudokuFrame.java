@@ -2,7 +2,6 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
 import java.io.Serial;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -23,7 +22,7 @@ public class SudokuFrame extends JFrame {
 	
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(panel.getWidth()+9, panel.getHeight()+30);
+		return new Dimension(panel.getWidth()+9, panel.getHeight()+35);
 	}
 	
 	public void alert(String msg) {
