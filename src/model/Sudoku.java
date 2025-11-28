@@ -14,8 +14,13 @@ public class Sudoku {
   public final int[][] model;
   private final Marker[] markers;
 
+  /**
+   * This constructor is the lazy-loaded version that generates a valid configuration
+   * later using Sudoku#generateModel
+   */
   public Sudoku() {
-    this(new int[SIZE][SIZE]);
+    model = new int[SIZE][SIZE];
+    markers = new Marker[9];
   }
 
   public Sudoku(int[][] model) {

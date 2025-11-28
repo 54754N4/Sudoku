@@ -26,6 +26,7 @@ public class NotedSudoku {
   }
 
   public NotedSudoku(Cell[][] cells) {
+    this.cells = cells;
     var model = new int[SUDOKU_SIZE][SUDOKU_SIZE];
     for (int x = 0; x < SUDOKU_SIZE; ++x) {
       for (int y = 0; y < SUDOKU_SIZE; ++y) {
@@ -35,7 +36,6 @@ public class NotedSudoku {
     if (!Verifier.verify(model)) {
       throw new IllegalArgumentException("Invalid sudoku given");
     }
-    this.cells = cells;
   }
 
   public void revertTo(Snapshot snapshot) {
