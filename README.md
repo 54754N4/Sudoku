@@ -26,4 +26,4 @@ Because Microsoft somehow decided that there's no need for us to be able to turn
 the numpad's default behaviour of when pressing `SHIFT` the numpad keys start sending
 other keycodes (e.g. arrow keys, page{up, down}, end etc) and not `NUMPAD{0-9}`.
 So adding notes with numpad doesn't work unless you use one of these 
-[solutions](https://learn.microsoft.com/en-us/answers/questions/3935239/how-to-make-it-so-left-shift-doesnt-affect-number?forum=windows-all&referrer=answers) 
+[solutions](https://learn.microsoft.com/en-us/answers/questions/3935239/how-to-make-it-so-left-shift-doesnt-affect-number?forum=windows-all&referrer=answers).
