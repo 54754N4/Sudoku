@@ -21,27 +21,13 @@ public enum Block {
     this.rows = rows;
   }
 
-  public static int of(Point p) {
+  public static int of(CachedPoint p) {
     for (var block : values()) {
       if (contains(p.x, block.rows) && contains(p.y, block.cols)) {
         return block.ordinal();
       }
     }
     return -1;
-  }
-
-  // starting block coords. based on block index is : B(i) = ((3*(i//3), (3*(i%3)))
-  public static Point startOf(int i) {
-    var coords = coordsOf(i);
-    return Point.from(
-        Sudoku.BLOCK_SIZE * coords.x,
-        Sudoku.BLOCK_SIZE * coords.y);
-  }
-
-  public static Point coordsOf(int i) {
-    return Point.from(
-        i % Sudoku.BLOCK_SIZE,
-        i / Sudoku.BLOCK_SIZE);
   }
 
   private static boolean contains(Number n, int[] arr) {

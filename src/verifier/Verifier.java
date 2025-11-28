@@ -1,7 +1,6 @@
 package verifier;
 
-import model.Block;
-import model.Point;
+import model.CachedPoint;
 import model.Sudoku;
 import model.Sudoku.Target;
 
@@ -37,7 +36,7 @@ public class Verifier {
 
   private static int sumBlock(int i, int[][] model) {  // when blocks are indexed as such : 	012
     int sum = 0;
-    Point start = Block.startOf(i);
+    CachedPoint start = CachedPoint.startOf(i);
     for (int dx = 0; dx < Sudoku.BLOCK_SIZE; dx++) {
       for (int dy = 0; dy < Sudoku.BLOCK_SIZE; dy++) {
         sum += model[start.x + dx][start.y + dy];

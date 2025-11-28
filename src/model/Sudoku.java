@@ -9,14 +9,20 @@ public class Sudoku {
 
   public enum Target {ROW, COL, BLOCK}
 
-  ;
-  public static final Random rand = new Random(0);
+  public static final Random rand = new Random();
   public static final int SIZE = 9, BLOCK_SIZE = 3;
   public final int[][] model;
   private final Marker[] markers;
 
   public Sudoku() {
-    model = new int[SIZE][SIZE];
+    this(new int[SIZE][SIZE]);
+  }
+
+  public Sudoku(int[][] model) {
+    if (!Verifier.verify(model)) {
+      throw new IllegalArgumentException("Invalid sudoku");
+    }
+    this.model = model;
     markers = new Marker[9];
   }
 
@@ -79,8 +85,8 @@ public class Sudoku {
 
     public final int number;
     private boolean[] rows, cols, blocks;  // marks which numbers we put
-    private Point first;
-    private final List<Point> invalids;
+    private CachedPoint first;
+    private final List<CachedPoint> invalids;
 
     public Marker(int number) {
       this.number = number;
@@ -97,7 +103,7 @@ public class Sudoku {
       return this;
     }
 
-    private void setFirst(Point p) {
+    private void setFirst(CachedPoint p) {
       // if we reset the first for this marker, then previous was invalid
       if (first != null) {
         invalids.add(first);
@@ -106,11 +112,11 @@ public class Sudoku {
     }
 
     private void randomAvailablePoint() {
-      Point point = null, previous;
+      CachedPoint point = null, previous;
       int block, error = 0;
       do { // keep trying till we get a new point in an unmarked block
         previous = point;
-        point = Point.from(randomAvailable(rows), randomAvailable(cols));
+        point = CachedPoint.from(randomAvailable(rows), randomAvailable(cols));
         if (previous == null) {
           setFirst(point);
         }

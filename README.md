@@ -10,8 +10,8 @@ Sudoku for keyboard warriors.
 | Add number           | [0-9]         | NUMPAD[0-9]         |
 | Add note             | SHIFT + [0-9] | SHIFT + NUMPAD[0-9] |
 | Highlight number     | ALT + [0-9]   | ALT + NUMPAD[0-9]   |
-| Undo                 | CTRL + X      |                     |
-| Redo                 | CTRL + Z      |                     |
+| Undo                 | CTRL + Z      |                     |
+| Redo                 | CTRL + X      |                     |
 | Clear cell           | DEL           | BACKSPACE           |
 | Clear all            | SHIFT + DEL   | SHIFT + BACKSPACE   |
 | Auto add all notes   | CTRL + N      |                     |

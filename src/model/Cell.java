@@ -15,7 +15,7 @@ public class Cell implements Serializable {
   public static enum State {EMPTY, CORRECT, INCORRECT}
 
   ;
-  public final Point coords;
+  public final CachedPoint coords;
   public final boolean[] notes;
   public boolean blocked;
   public final int actual;
@@ -26,11 +26,11 @@ public class Cell implements Serializable {
     this.number = number;
     notes = new boolean[SUDOKU_SIZE];
     clearNotes();
-    coords = Point.from(x, y);
+    coords = CachedPoint.from(x, y);
   }
 
   public Cell clone() {
-    Cell cell = new Cell(coords.x, coords.y, number, actual);
+    var cell = new Cell(coords.x, coords.y, number, actual);
     cell.setBlocked(blocked);
     for (int i = 1; i <= notes.length; ++i) {
       if (hasNote(i)) {

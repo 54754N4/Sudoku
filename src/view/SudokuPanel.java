@@ -24,10 +24,9 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import model.Block;
+import model.CachedPoint;
 import model.Cell;
 import model.Cell.State;
-import model.Point;
 
 public class SudokuPanel extends JPanel implements MouseListener {
 
@@ -41,14 +40,14 @@ public class SudokuPanel extends JPanel implements MouseListener {
   public static final Font
       BIG_FONT = new Font("Verdana", Font.BOLD, 50),
       SMALL_FONT = new Font("Verdana", Font.PLAIN, 12);
-  public static final Point POINT_MIDDLE = Point.from(SUDOKU_SIZE / 2, SUDOKU_SIZE / 2);
+  public static final CachedPoint POINT_MIDDLE = CachedPoint.from(SUDOKU_SIZE / 2, SUDOKU_SIZE / 2);
   private final float difficulty;
   private final SudokuFrame frame;
   private Controller controller;
   private ActionMap actionMap;
   private InputMap inputMap;
   private LocalTime start;
-  private Point selected;
+  private CachedPoint selected;
   private int highlight;
 
   public SudokuPanel(float difficulty, SudokuFrame frame) {
@@ -106,9 +105,10 @@ public class SudokuPanel extends JPanel implements MouseListener {
   }
 
   private void drawCells(Graphics g) {
+    var sudoku = controller.getSudoku();
     for (int x = 0; x < SUDOKU_SIZE; ++x) {
       for (int y = 0; y < SUDOKU_SIZE; ++y) {
-        drawCell(g, controller.getCell(x, y));
+        drawCell(g, sudoku.getCell(x, y));
       }
     }
   }
@@ -144,7 +144,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
     int x = i * BLOCK_SIZE,
         y = j * BLOCK_SIZE,
         SMALL_BLOCK = BLOCK_SIZE / 3;
-    Point d = Block.coordsOf(n);
+    CachedPoint d = CachedPoint.coordsOf(n);
     x += d.x * SMALL_BLOCK + 8;
     y += d.y * SMALL_BLOCK + 16;
     if (n + 1 == highlight) {
@@ -199,7 +199,8 @@ public class SudokuPanel extends JPanel implements MouseListener {
   @Override
   public void mouseClicked(MouseEvent e) {
     var mousePoint = e.getPoint();
-    selected = controller.pointFromCoords(mousePoint.x, mousePoint.y);
+    selected = controller.getSudoku()
+        .pointFromCoords(mousePoint.x, mousePoint.y);
     repaint();
   }
 
@@ -275,8 +276,8 @@ public class SudokuPanel extends JPanel implements MouseListener {
   }
 
   private void setActionBindings() {
-    bind(REDO, KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK), new RedoAction());
     bind(UNDO, KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), new UndoAction());
+    bind(REDO, KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK), new RedoAction());
   }
 
   private void setDeleteBindings() {
@@ -426,7 +427,7 @@ public class SudokuPanel extends JPanel implements MouseListener {
     @Override
     public void execute() {
       controller.addNumber(selected, number);
-      if (controller.isFinished()) {
+      if (controller.getSudoku().isFinished()) {
         win();
       }
     }
